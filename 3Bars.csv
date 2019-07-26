@@ -1,0 +1,24 @@
+% Número máximo de iterações e erro máximo entre duas iterações
+100 , 0.0000001
+% Vetor Indicando quais as barras são do tipo slack/swing 
+1 , 0 , 0
+% Vetor que indica quais os valores iniciais de tensão a serem adotadas como
+% ponto de partida dos valores das tensões dadas nas barras
+1 , 1.05 , 1 
+% Vetor informando os valores (potência ativa e reativa fornecidos por cada gerador.
+% Seus valores devem ser positivos pro programa entender que elas são
+% injetadas na barra
+0.308-0.081i , 0, 0 
+% Consumo de potência por barra (São negativadas pelo programa já que as correntes 
+% são de saída)
+0 , 0.3+0.267i , 0.5+0.1i
+% Valor da impedância shunt capacitiva ou indutiva por barra. Inf se não houver
+Inf , Inf , Inf
+% Matriz de impedâncias Z 
+% Cconsidere zero a impedância da barra com relação à ela mesma
+% e Infinito (Inf) as impedâncias entre barras nao conectadas.
+0               , 0.00477+0.0474i , 0.0062+0.0632i 
+0.00477+0.0474i , 0               , 0.0047+0.0474i
+0.0062+0.0632i  , 0.0047+0.0474i  , 0 
+%  Comentários depois da matriz de impedâncias também são ignorado 
+%  Aliás nem são lidos

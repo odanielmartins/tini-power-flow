@@ -1,0 +1,14 @@
+% slack bars
+1 , 0 , 1 , 0 
+% Initial bar voltages assumption
+1 , 1 , 1 ,1           
+% Power generation per bus
+1 , 0 , 0 , 0 
+% Power Consumption per bus
+0 , 0.3+0.2i , 0.3 , 0.2+0.15i             
+% Z matrix
+0         , 0.1+0.4i  , 0          , 0.05+0.2i           
+0.1-0.4i  ,  0        , 0.1+0.5i   , 0.1+0.4i          
+0         , 0.1+0.5i  , 0          , 0.05+0.2i          
+0.05+0.2i , 0.1+0.4i  , 0.05+0.2i  , 0
+ 
