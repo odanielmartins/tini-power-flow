@@ -1,47 +1,50 @@
-% O formato do arquivo para fornecer os dados do sistema elétrico de potência
-% deve seguir este exemplo.
-% - Você pode incluir um número qualquer de linhas de comentários entre cada
-%   linha contendo informações, desde que elas comecem pelo caracter %
-% - Os vetores de tensão, potência gerada e consumida e a matriz de impedâncias
-%   devem ser fornecido na ordem ilustrada no exemplo. 
-% - Os argumentos em cada linha devem ser separados por vírgulas (.CSV)
+% This is an examaple of a four bus bars electric power system as must be furnished
+% doposerFlow.m and also a detailed description of the rules that mus be followed
+% to generate a file to be read by our small power flow program
+% - You may include any number of comment lines between information lines but they
+%   must begin with a "%" begining the line
+% - Voltage and generated and consumed power vectors must be informed in the order
+%   ilustrated by this example.
+% - Floating point arguments in each line must be separeted by commas and follow
+%   english floating point notation.
+% - It is advised to use per unit notation so as to have a visual simple behavior
+%   system feeling.
 % ============================================================================
-% Vetor indicando o número máximo de iterações e a menor diferença entre duas
-% iterações que provoca a paradada algorítmo.
+% Vector below indicates the maximum nunber of iterations and the least difference
+% between two iterations so as to stop the algorithm loop.
 1000 , 0.0001
 % ============================================================================
-% Vetor Indicando quais as barras são do tipo slack/swing 
+% This vector indicates what are slack (swing) bars;
 1 , 0 , 0 , 0
 % ============================================================================
-% Vetor que indica quais os valores iniciais de tensão a serem adotadas como
-% ponto de partida dos valores das tensões dadas nas barras
+% This below vector informs what are the initial values to be taken by voltages as
+% starting values.
 1.02 , 1 , 1 , 1           
 % ============================================================================
-% Vetor informando os valores (potência ativa e reativa fornecidos por cada gerador.
-% Seus valores devem ser positivos pro programa entender que elas são
-% injetadas na barra
+% Here are the per unit values of active and reactive power for each generator for
+% each bus bar.
+% Their values mus be positives so the program will undertand they a injected
+% in the bar.
 1.02 , 0 , 0 , 0 
 % ============================================================================
-% Consumo de potência por barra (São negativadas pelo programa já que as correntes 
-% são de saída)
+% Power consumption for each bus bar must be also informed as positive. They are
+% negativated by the program itself.
 0 , 1+0i , 1+0i , 1+0i             
 % ============================================================================
-% Vetor informando valor de impedâncias de eventuais shunts capacitivos ou 
-% indutivos em cada barra. Inf se não houver elemento de compensação de tensão.
+% Thi vector informs eventual shunt capacitive impedances for each bus bar. 
+% If there are none please inform with "Inf" text. If your line model is a Pi
+% model, you must inform here shunt Pi capacitance values.
 Inf , Inf , Inf , Inf
 % ============================================================================
-% Matriz de impedâncias Z 
-% Cconsidere zero a impedância da barra com relação à ela mesma
-% e Infinito (Inf) as impedâncias entre barras nao conectadas.
+% This is the Z impedance array.
+% Must be considered Inf if there are no connection betwee two bars.
 0       , 0.5i    , 0.5i    , Inf           
 0.5i    , 0        , Inf     , 0.5i          
 0.5i    , Inf      ,   0     , 0.5i          
 Inf     , 0.5i     , 0.5i    , 0
 %  ============================================================================
-%  Comentários depois da matriz de impedâncias também são ignorados 
-%  Aliás nem são lidos
-%       O exemplo acima, como pode ser deduzido, corresponde ao seguinte
-%       sistema elétrico de potência:
+%  Al comments after impedance array are ignored. In reality they are not even read.
+%       The above example was deduced from the following electric power system:
 %
 %              |G1 = 1.02+0i                           | S2 = 1+0i
 %     (1) _____|_____  v1=1.02+0i             v2=?_____|____ (2)
@@ -59,30 +62,30 @@ Inf     , 0.5i     , 0.5i    , 0
 %              |                                       |
 %              |S3 = 1+0i                              |S4 = 1+0i 
 %
-% ========== Tensões resultantes em cada barra ==========
-% V(1) = 1.0200 - 0.0000i Mag = 1.0200 Ang = 0.00º
-% V(2) = 0.945462 - 0.247535i  Mag = 0.977329 Ang = -14.67º
-% V(3) = 0.945462 - 0.247535i  Mag = 0.977329 Ang = -14.67º
-% V(4) = 0.810791 - 0.476692i  Mag = 0.940540 Ang = -30.45º
+% ========== Resulting voltages in each bus bar ==========
+% V(1) = 1.0200 - 0.0000i Mag = 1.0200 Ang = 0.00Âº
+% V(2) = 0.945462 - 0.247535i  Mag = 0.977329 Ang = -14.67Âº
+% V(3) = 0.945462 - 0.247535i  Mag = 0.977329 Ang = -14.67Âº
+% V(4) = 0.810791 - 0.476692i  Mag = 0.940540 Ang = -30.45Âº
 %
-% ========== Número de iterações para cada barra ==========
-% Barra   Iterações       Barra   Iterações       Barra   Iterações       Barra   Iterações
+% ========== Number of iteration for each bar ==========
+% Bar    Iterations       Bar    Iterations       Bar    Iterations      Bar     Iterations
 % 1               0       2               5       3               5       4               7
-% ========== Correntes e potências em cada linha ==========
-% I(1,2) = -0.485362 + 0.146153i Mod = 0.506890 ang = 2.85º
-% P(1,2) = 0.072356 + 0.109250i Mod = 0.131038 ang = 0.99°
-% I(1,3) = -0.495070 + 0.149076i Mod = 0.517028 ang = 2.85º
-% P(1,3) = 0.073803 + 0.111435i Mod = 0.133659 ang = 0.99°
-% I(2,4) = -0.458314 + 0.269343i Mod = 0.531598 ang = 2.61º
-% P(2,4) = 0.123443 + 0.068753i Mod = 0.141298 ang = 0.51°
-% I(3,4) = -0.458314 + 0.269343i Mod = 0.531598 ang = 2.61º
-% P(3,4) = 0.123443 + 0.068753i Mod = 0.141298 ang = 0.51°
+% ========== Currents and power flows for each line ==========
+% I(1,2) = -0.485362 + 0.146153i Mod = 0.506890 ang = 2.85Âº
+% P(1,2) = 0.072356 + 0.109250i Mod = 0.131038 ang = 0.99Â°
+% I(1,3) = -0.495070 + 0.149076i Mod = 0.517028 ang = 2.85Âº
+% P(1,3) = 0.073803 + 0.111435i Mod = 0.133659 ang = 0.99Â°
+% I(2,4) = -0.458314 + 0.269343i Mod = 0.531598 ang = 2.61Âº
+% P(2,4) = 0.123443 + 0.068753i Mod = 0.141298 ang = 0.51Â°
+% I(3,4) = -0.458314 + 0.269343i Mod = 0.531598 ang = 2.61Âº
+% P(3,4) = 0.123443 + 0.068753i Mod = 0.141298 ang = 0.51Â°
 %
 %
-%       O SISTEMA ELÉTRICO AGORA COMPLETAMENTE DESCRITO EM PU
+%       THE ELECTRIC POWER SYSTEM COMPLETELY DESCRIBED IN PER UNIT
 %
 %              |G1 = 1.02+0i                           | S2 = 1+0i
-%     (1) _____|_____  v1=1.02                    _____|____ (2) v2=0.977 -14.67º
+%     (1) _____|_____  v1=1.02                    _____|____ (2) v2=0.977 -14.67Âº
 %           |    |                                 |      |
 %           |    |           z12 = 0.5i            |      | 
 %           |    -----------------------------------      |
@@ -93,6 +96,6 @@ Inf     , 0.5i     , 0.5i    , 0
 %           |               z34 = 0.5i                    |
 %           |    ------------------------------------     |
 %           |    |      P=0.123 Q=0.068             |     |
-%     (3) __|____|__ v3=0.977 -14.67º             __|_____|__ (4) v4=0.941 -30.45º
+%     (3) __|____|__ v3=0.977 -14.67Âº             __|_____|__ (4) v4=0.941 -30.45Âº
 %              |                                       |
 %              |S3 = 1+0i                              |S4 = 1+0i 
