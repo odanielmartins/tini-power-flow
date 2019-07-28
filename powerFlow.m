@@ -1,14 +1,14 @@
-% PEQUENO SCRIPT QUE PERMITE O CÁLCULO DE UM LOADFLOW POR APROXIMAÇÃO
-% Inspirado na aula "Power System Load Flow Tutorial: Part 1" que
-% pode ser encontrada em https://www.youtube.com/watch?v=LeGss3hdpMs
+% THIS SMALL OCTAVE/MATLAB SCRIPT ESTIMATES A POWER SYSTEM STATE DESCRIPTION
+% It was inspired in "Power System Load Flow Tutorial: Part 1" class that may
+% be found in https://www.youtube.com/watch?v=LeGss3hdpMs
 
-fileN = input ("Nome do arquivo .csv que descreve o sistema elétrico: ","S");
+fileN = input ("File name .csv with electric power system description ","S");
 
-% Alguns dados do sistema elétrico
+% Some of the electric power system data.
 fid = fopen(fileN,"r");
-% vetor que indica o número máximo de interações e o erro que para o algorítmo
+% Vector indicating maximum iteration number and error.
 do
-  aux = fgetl(fid);         % Le eventuais linhas comentários antes do velor de matrizes slack
+  aux = fgetl(fid);         % Read eventual comment lines before vector for slack bars.
 until(aux(1) != '%')
 aux = strsplit(aux,',');
 vtxt = [aux{1:2}];
@@ -16,55 +16,55 @@ vals = str2num(vtxt);
 niter = vals(1);
 erro  = vals(2);
 
-% vetor que indica quais as barras são do tipo slack (tensão constante)
+% This vector indicates which bars are used as slack bars (those with a constant controled voltage).
 do
-  aux = fgetl(fid);         % Le eventuais linhas comentários antes do velor de matrizes slack
+  aux = fgetl(fid);         % Read eventual comment lines
 until(aux(1) != '%')
 aux = strsplit(aux,',');
-nBars = length(aux);         % Numero de barras
-fprintf(' ======= Número de barramentos do sistema elétrico = %d\n',nBars);
+nBars = length(aux);         % Number of bars
+fprintf(' ======= Number of bars in electric power system = %d\n',nBars);
 vslackTxt = [aux{1:nBars}];
-%fprintf("Barras do tipo slack ou swing ");
+%fprintf("Slack bars
 vslack = str2num(vslackTxt);
 %vslack
 
-%printf(' ======= Valores de partida das tensões. \n');
+%printf(' ======= Voltage initial values. \n');
 do
-  aux = fgetl(fid);    % Le eventuais comentários antes dos valores de tensão por barra
+  aux = fgetl(fid);    % Read eventual comment lines.
 until(aux(1) != '%')
 aux = strsplit(aux,',');
 vTxt = [aux{[1:nBars]}];
 V = str2num(vTxt);
 
-%printf(' ========= Potência fornecida para cada barra: \n');
+%printf(' ========= Powe injecte for each bar.
 
 do
-  aux = fgetl(fid);     % Le eventuais linhas de comentário
+  aux = fgetl(fid);     % Eventual comment lines
 until(aux(1) != '%')
 aux = strsplit(aux,',');
 Gtxt = [aux{[1:nBars]}];
 G = str2num(Gtxt);
 
-%printf(' ========= Potência absorvida em cada barra: \n');
+%printf(' ========= Load power absorbed for each bus bar: \n');
 do
-  aux = fgetl(fid);     % Le comentários
+  aux = fgetl(fid);     % Read comments
 until(aux(1) != '%')
 aux = strsplit(aux,',');
 Stxt = [aux{[1:nBars]}];
 S = str2num(Stxt);
 
-%printf(' ========= Calculo das eventuais admitâncias de shunt em cada barra. \n');
+%printf(' ========= Eventual shunt bus bar impedances \n');
 do
-  aux = fgetl(fid);     % Le comentários
+  aux = fgetl(fid);     % Le comentÃ¡rios
 until(aux(1) != '%')
 aux = strsplit(aux,',');
 Stxt = [aux{[1:nBars]}];
 yShunt = 1./str2num(Stxt);
 
 
-printf(' ========== Matriz impedância fornecida: \n');
+printf(' ========== Matriz impedÃ¢ncia fornecida: \n');
 do
-  aux = fgetl(fid);     % read comment
+  aux = fgetl(fid);     % Read comments
 until(aux(1) != '%')
 
 Z = [];
@@ -77,16 +77,16 @@ for bar = 1:nBars
 endfor
 Z
 
-printf(' ==========  Matriz admitância calculada: \n');
+printf(' ==========  Calculated admitance array: \n');
 Y = 1./Z;
-%for lin = 1:nBars         % Inverte as impedâncias termo a termo
+%for lin = 1:nBars         % Invert impedance term by term
 %  for col = 1:nBars
 %    if(Y(lin,col) != 0)
 %      Y(lin,col) = 1/Y(lin,col);
 %    endif
 %  endfor
 %endfor
-% Calcula admitâncias externas
+% Calculate external admitances
 for lin = 1:nBars
   Y(lin,lin) = yShunt(lin);
   for col = 1:nBars
@@ -97,24 +97,24 @@ for lin = 1:nBars
 endfor
 Y
 
-% ========================= Calcula o fluxo de potência =====================
+% ========================= Calculate power flow =====================
 
 iInter = [];
 for nb=1:nBars;
   iInter(nb) = 0;  
 endfor
 
-printf('========== Tensões resultantes em cada barra ==========\n');
-for nb = 1:nBars            % Para todas as barras
+printf('========== Resulting voltage for each bar ==========\n');
+for nb = 1:nBars            % For all bars
   
-  % utilizando a lei de Kirchoff por até 'niter' iterações
-  if(vslack(nb) == 1)              % tensão em barra slack não precisa calcular
+  % Using KirchoffÂ´s law for each bar for each iteration
+  if(vslack(nb) == 1)              % If slack bar do not calculate
   vmodulo = abs(V(nb));  vfase = angle(V(nb))*360/(2*pi);
   if(imag(V(nb)) < 0)
-     fprintf('V(%d) = %6.4f - %6.4fi Mag = %6.4f Ang = %.2fº\n',
+     fprintf('V(%d) = %6.4f - %6.4fi Mag = %6.4f Ang = %.2fÂº\n',
         nb,real(V(nb)),abs(imag(V(nb))),vmodulo,vfase);
   else   
-     fprintf('V(%d) = %6.4f - %6.4fi Mag = %6.4f Ang = %.2fº\n',
+     fprintf('V(%d) = %6.4f - %6.4fi Mag = %6.4f Ang = %.2fÂº\n',
         nb,real(V(nb)),abs(imag(V(nb))),vmodulo,vfase);
   end
     continue;
@@ -124,7 +124,7 @@ for nb = 1:nBars            % Para todas as barras
   
   for it = 1:niter
     iS = 0;
-    for bar = 1:nBars                           % componentes das barras adjacentes
+    for bar = 1:nBars                           % Adjacente bar components
       if(bar != nb)
         iS += Y(nb,bar)*V(bar);
       endif
@@ -143,17 +143,17 @@ for nb = 1:nBars            % Para todas as barras
   endfor
 
   if(imag(V(nb)) < 0)
-    fprintf('V(%d) = %f - %fi  Mag = %f Ang = %.2fº\n',
+    fprintf('V(%d) = %f - %fi  Mag = %f Ang = %.2fÂº\n',
         nb,real(V(nb)),abs(imag(V(nb))),vmodulo,vfase);
     else
-    fprintf('V(%d) = %f + %fi  Mag = %f Ang = %.2fº\n',
+    fprintf('V(%d) = %f + %fi  Mag = %f Ang = %.2fÂº\n',
         nb,real(V(nb)),abs(imag(V(nb))),vmodulo,vfase);
   end  
 endfor
 
-printf('\n========== Número de iterações para cada barra ==========\n');
+printf('\n========== Number of iteration for each bars until error is atained ==========\n');
 for bar = 1:nBars
-  printf('Barra\tIterações\t');
+  printf('Bar\tIterations\t');
 endfor
 printf('\n');
 for bar = 1:nBars
@@ -163,7 +163,7 @@ printf('\n');
 
 I = [];
 P = [];
-printf('========== Correntes e potências em cada linha ==========\n');
+printf('========== Currents and power flow for each line ==========\n');
 for lin = 1:nBars
   for col = 1:nBars
     if(lin != col)
@@ -171,18 +171,18 @@ for lin = 1:nBars
         if(  (Z(lin,col) != 0) && (Z(lin,col) < Inf)  ) 
           I(lin,col) = (V(col) - V(lin))*Y(lin,col);
           if(imag(I(lin,col)) < 0)
-            printf('I(%d,%d) = %f - %fi Mod = %f ang = %.2fº \n', lin,col,real(I(lin,col)),abs(imag(I(lin,col))),
+            printf('I(%d,%d) = %f - %fi Mod = %f ang = %.2fÂº \n', lin,col,real(I(lin,col)),abs(imag(I(lin,col))),
                  abs(I(lin,col)),angle(I(lin,col)));
           else
-            printf('I(%d,%d) = %f + %fi Mod = %f ang = %.2fº \n', lin,col,real(I(lin,col)),abs(imag(I(lin,col))),
+            printf('I(%d,%d) = %f + %fi Mod = %f ang = %.2fÂº \n', lin,col,real(I(lin,col)),abs(imag(I(lin,col))),
                  abs(I(lin,col)),angle(I(lin,col)));
           end                 
           P(lin,col) = (V(col) - V(lin))*I(lin,col);
           if(imag(P(lin,col)) < 0)
-            printf('P(%d,%d) = %f - %fi Mod = %f ang = %.2f°\n',lin,col,real(P(lin,col)),abs(imag(P(lin,col))),
+            printf('P(%d,%d) = %f - %fi Mod = %f ang = %.2fÂ°\n',lin,col,real(P(lin,col)),abs(imag(P(lin,col))),
                 abs(P(lin,col)), angle(P(lin,col)));
           else
-            printf('P(%d,%d) = %f + %fi Mod = %f ang = %.2f°\n',lin,col,real(P(lin,col)),abs(imag(P(lin,col))),
+            printf('P(%d,%d) = %f + %fi Mod = %f ang = %.2fÂ°\n',lin,col,real(P(lin,col)),abs(imag(P(lin,col))),
                 abs(P(lin,col)), angle(P(lin,col)));
           end                
         endif
